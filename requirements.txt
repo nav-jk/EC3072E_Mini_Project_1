@@ -1,0 +1,13 @@
+torch>=2.0
+torchvision>=0.15
+numpy
+pandas
+matplotlib
+pillow
+scikit-image
+lpips
+tqdm
+datasets>=2.14      # for downloading WikiArt (huggan/wikiart) in download_wikiart.py
+gdown               # for downloading StyTr^2 weights from Google Drive
+jupyterlab
+ipykernel

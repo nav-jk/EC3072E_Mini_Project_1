@@ -1,0 +1,276 @@
+# Neural Style Transfer — Comparative Study
+
+A mini project comparing different approaches to **Neural Style Transfer (NST)**.
+
+The project trains a **Fast Neural Style Transfer** model from scratch and compares its results with two pretrained arbitrary-style-transfer methods:
+
+- **Fast Neural Style Transfer (FST)** — Johnson et al., 2016
+- **AdaIN** — Huang & Belongie, 2017
+- **StyTr²** — Deng et al., 2022
+
+The models are evaluated using content loss, style loss, SSIM, LPIPS, and inference time.
+
+## Project Structure
+
+```text
+nst_project/
+├── notebook.ipynb
+├── requirements.txt
+├── README.md
+│
+├── scripts/
+│   ├── download_coco.py
+│   ├── download_wikiart.py
+│   └── download_pretrained_weights.py
+│
+├── data/
+│   ├── coco/
+│   │   ├── train/
+│   │   └── test/
+│   └── wikiart/
+│       └── <style_name>/
+│
+├── models/
+│   ├── adain/
+│   ├── stytr2/
+│   └── fst/
+│
+└── external/
+    └── StyTR-2/
+```
+
+The notebook contains the main training, inference, and evaluation pipeline. The scripts are used to prepare the datasets and pretrained models.
+
+## Setup
+
+This project is intended to run on a machine with an NVIDIA GPU.
+
+Enter the project directory:
+
+```bash
+cd nst_project
+```
+
+Create a virtual environment:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+Install PyTorch suitable for your CUDA version.
+
+For example, for CUDA 12.1:
+
+```bash
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+```
+
+Then install the remaining dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Check that PyTorch can see the GPU:
+
+```bash
+python -c "import torch; print(torch.cuda.is_available()); print(torch.cuda.get_device_name(0))"
+```
+
+## Download the Data
+
+### 1. COCO Content Images
+
+```bash
+python scripts/download_coco.py
+```
+
+This downloads the COCO content-image subset used for training and testing.
+
+### 2. WikiArt Style Images
+
+```bash
+python scripts/download_wikiart.py
+```
+
+The images are stored as:
+
+```text
+data/wikiart/
+├── expressionism/
+└── cubism/
+```
+
+The first style is used to train the Fast Neural Style Transfer model.
+
+### 3. Pretrained Models
+
+```bash
+python scripts/download_pretrained_weights.py
+```
+
+This downloads the pretrained weights required for AdaIN and StyTr².
+
+## Run the Project
+
+After preparing the datasets and pretrained weights, start Jupyter:
+
+```bash
+jupyter lab
+```
+
+Open:
+
+```text
+notebook.ipynb
+```
+
+and run the notebook **from top to bottom**.
+
+The notebook handles:
+
+1. Dataset loading and preprocessing
+2. Fast Neural Style Transfer model training
+3. Loading pretrained AdaIN
+4. Loading pretrained StyTr²
+5. Generating stylized images
+6. Calculating evaluation metrics
+7. Comparing the different methods
+
+## Configuration
+
+Most training settings can be changed from the `CFG` section near the beginning of the notebook.
+
+Useful settings include:
+
+```python
+CFG["image_size"]
+CFG["batch_size"]
+CFG["epochs"]
+CFG["style_name_for_training"]
+```
+
+If GPU memory is limited, reduce the image size or batch size.
+
+## Methods
+
+### Fast Neural Style Transfer
+
+A feed-forward network is trained specifically for a particular style.
+
+```text
+Content Image
+     │
+     ▼
+Fast NST Network
+     │
+     ▼
+Stylized Image
+```
+
+A separate network is required for each style.
+
+### AdaIN
+
+AdaIN (Adaptive Instance Normalization) is a pretrained arbitrary style transfer method.
+
+Unlike Fast NST, it can apply different styles without retraining the network for every style.
+
+```text
+Content Image ──┐
+                ├──► AdaIN ──► Stylized Image
+Style Image ────┘
+```
+
+### StyTr²
+
+StyTr² is another pretrained arbitrary style transfer method based on Transformer architecture.
+
+It is included as a more recent approach for comparison with Fast NST and AdaIN.
+
+## Evaluation
+
+The methods are compared using:
+
+- **Content Loss** — how well the content structure is preserved
+- **Style Loss** — how well the target style is reproduced
+- **SSIM** — structural similarity
+- **LPIPS** — perceptual similarity
+- **Inference Time** — time required to generate a stylized image
+
+The same content images are used when comparing the different methods.
+
+## Troubleshooting
+
+### CUDA / GPU not detected
+
+Check:
+
+```bash
+nvidia-smi
+```
+
+and:
+
+```bash
+python -c "import torch; print(torch.cuda.is_available())"
+```
+
+### Out of GPU memory
+
+Reduce:
+
+```python
+CFG["batch_size"]
+```
+
+or:
+
+```python
+CFG["image_size"]
+```
+
+### StyTr² import error
+
+StyTr² is an older research implementation and may have compatibility issues with newer PyTorch versions.
+
+For example, if you encounter:
+
+```text
+ModuleNotFoundError: No module named 'torch._six'
+```
+
+in:
+
+```text
+external/StyTR-2/models/ViT_helper.py
+```
+
+replace:
+
+```python
+from torch._six import container_abcs
+```
+
+with:
+
+```python
+import collections.abc as container_abcs
+```
+
+## Results
+
+The final results and comparisons are generated by the notebook.
+
+The main comparison is:
+
+```text
+Fast NST
+   vs
+AdaIN
+   vs
+StyTr²
+```
+
+in terms of image quality, style/content preservation, and inference speed.
