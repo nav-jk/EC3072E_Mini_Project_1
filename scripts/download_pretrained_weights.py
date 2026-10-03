@@ -1,17 +1,3 @@
-"""
-Download pretrained weights for the two "existing/recent method" comparisons:
-  - AdaIN (Huang & Belongie, ICCV 2017)   -> models/adain/
-  - StyTr^2 (Deng et al., CVPR 2022)      -> models/stytr2/
-
-AdaIN weights are hosted as GitHub release assets (reliable, no auth needed --
-verified working). StyTr^2's official weights are hosted on Google Drive by
-the authors, downloaded here via `gdown`; Google Drive occasionally rate-limits
-anonymous downloads, so a manual fallback is printed if it fails.
-
-Usage:
-    python scripts/download_pretrained_weights.py
-    python scripts/download_pretrained_weights.py --skip-stytr2   # if you only need AdaIN
-"""
 import argparse
 import shutil
 import subprocess

@@ -1,8 +1,3 @@
-"""
-Usage:
-    python scripts/download_coco.py
-    python scripts/download_coco.py --max-images 8000 --split coco2017-train
-"""
 import argparse
 import random
 import shutil
